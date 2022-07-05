@@ -10,25 +10,19 @@ exports.signUp = async (req, res) => {
   }
 };
 
-exports.getUsers = async (req, res) => {
-  const users = await User.find(); //.find() is a mongoose method, mongoose = odm
-  console.log(users);
-  res.send(users); // Returning back to isomnia
-};
-
-exports.deleteUsers = async (req, res) => {
-  const users = await User.deleteOne(); // deleteOne mongoose method
-  res.send(users); // Returns deleted to insomnia
-};
-
-exports.updateUsers = async (req, res) => {
-  const userObj = {
-    username: req.body.username,
-    email: req.body.email,
-    password: req.body.password,
-  };
-
-  const users = await User.findOneAndUpdate(userObj);
-
-  res.send(users);
+exports.login = async (req, res) => {
+  try {
+    const user = await User.findOne({
+      username: req.body.username,
+      password: req.body.password,
+    });
+    if (!user) {
+      throw new Error("Incorrect credentials");
+    } else {
+      res.send({ user });
+    }
+  } catch (error) {
+    console.log(error);
+    res.send({ error });
+  }
 };
