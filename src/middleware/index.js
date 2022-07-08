@@ -1,5 +1,8 @@
 const bcrypt = require("bcryptjs");
-const User = (exports.hashPass = async (req, res, next) => {
+const jwt = require("jsonwebtoken");
+const User = require("../user/model");
+
+exports.hashPass = async (req, res, next) => {
   try {
     // const tempPass = req.body.password; //grabbed password variable from body, and stored it locally
     // const hashedPass = await bcrypt.hash(tempPass, 8); //hashed the password and stored it in a new constant
@@ -10,4 +13,34 @@ const User = (exports.hashPass = async (req, res, next) => {
     console.log(error);
     res.send({ error });
   }
-});
+};
+
+exports.comparePass = async (req, res, next) => {
+  try {
+    req.user = await User.findOne({ username: req.body.username });
+    // const match = await bcrypt.compare(req.body.password, user.password);
+    if (await bcrypt.compare(req.body.password, req.user.password)) {
+      next();
+    } else {
+      throw new Error("Incorrect credentials");
+    }
+  } catch (error) {
+    console.log(error);
+    res.send({ error });
+  }
+};
+
+exports.tokenCheck = async (req, res, next) => {
+  try {
+    // const token = req.header("Authorization"); //grab token from Authorization header in the request
+    const decodedToken = jwt.verify(
+      req.header("Authorization"),
+      process.env.SECRET
+    ); //decode token using same secret that created the token
+    req.user = await User.findById(decodedToken.id); //finding the user by their id, stored in the token
+    next();
+  } catch (error) {
+    console.log(error);
+    res.send({ error });
+  }
+};

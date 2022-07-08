@@ -4,9 +4,8 @@ const User = require("./model");
 exports.signUp = async (req, res) => {
   try {
     const newUser = await User.create(req.body); //req.body is an object that contains k/v pairs that match my User model
-    const token = jwt.sign({ id: newUser._id }, "Steve Gary Forever");
-    console.log(token);
-    res.send({ user: newUser });
+    const token = jwt.sign({ id: newUser._id }, process.env.SECRET); //sign method creates a token with object payload hidden in it
+    res.send({ user: newUser, token });
   } catch (error) {
     console.log(error);
     res.send({ error });
@@ -15,12 +14,27 @@ exports.signUp = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const user = await User.findOne({
-      username: req.body.username,
-      password: req.body.password,
-    });
-    if (!user) {
+    // const user = await User.findOne({
+    //   username: req.body.username,
+    //   password: req.body.password,
+    // });
+    console.log("in login " + req.user);
+    if (!req.user) {
       throw new Error("Incorrect credentials");
+    } else {
+      res.send({ user: req.user });
+    }
+  } catch (error) {
+    console.log(error);
+    res.send({ error });
+  }
+};
+
+exports.listUser = async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.params.username });
+    if (!user) {
+      throw new Error("No user found");
     } else {
       res.send({ user });
     }
@@ -30,7 +44,12 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.deleteUsers = async (req, res) => {
-  const users = await User.deleteOne();
-  res.send(users);
+exports.deleteUser = async (req, res) => {
+  try {
+    const user = await User.deleteOne({ username: req.params.username });
+    res.send(user);
+  } catch (error) {
+    console.log(error);
+    res.send({ error });
+  }
 };
