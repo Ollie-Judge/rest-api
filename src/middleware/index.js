@@ -1,6 +1,5 @@
 const bcrypt = require("bcryptjs");
-
-exports.hashPass = async (req, res, next) => {
+const User = (exports.hashPass = async (req, res, next) => {
   try {
     // const tempPass = req.body.password; //grabbed password variable from body, and stored it locally
     // const hashedPass = await bcrypt.hash(tempPass, 8); //hashed the password and stored it in a new constant
@@ -11,4 +10,4 @@ exports.hashPass = async (req, res, next) => {
     console.log(error);
     res.send({ error });
   }
-};
+});
