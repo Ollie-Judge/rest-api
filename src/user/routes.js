@@ -1,5 +1,11 @@
 const { Router } = require("express"); //import Router method only from express
-const { signUp, login, listUser, deleteUser } = require("./controllers"); //import only signUp from controllers file
+const {
+  signUp,
+  login,
+  listUser,
+  deleteUser,
+  updateUser,
+} = require("./controllers"); //import only signUp from controllers file
 const { hashPass, comparePass, tokenCheck } = require("../middleware");
 const userRouter = Router(); //create a router that can have endpoints added to it
 
@@ -8,5 +14,6 @@ userRouter.post("/login", comparePass, login); //defining a post request on /log
 userRouter.get("/token", tokenCheck, login); //defining a post request on /token path, that calls both token and login
 userRouter.get("/user/:username", listUser);
 userRouter.delete("/user/:username", deleteUser);
+userRouter.put("/user", updateUser);
 
 module.exports = userRouter;

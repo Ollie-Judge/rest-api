@@ -53,3 +53,15 @@ exports.deleteUser = async (req, res) => {
     res.send({ error });
   }
 };
+
+exports.updateUser = async (req, res) => {
+  const userObj = {
+    username: req.body.username,
+    email: req.body.email,
+    password: req.body.password,
+  };
+
+  const users = await User.findOneAndUpdate(userObj);
+
+  res.send(users);
+};
